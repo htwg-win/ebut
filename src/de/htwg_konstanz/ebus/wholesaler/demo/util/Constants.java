@@ -63,4 +63,8 @@ public class Constants
 	public static final int USER_INTERNAL = 1;
 	public static final int USER_CUSTOMER = 2;
 	public static final int USER_SUPPLIER = 3;
+	
+	
+	public static final String ACTION_SHOW_IMPORT = "showImport";
+	public static final String ACTION_SHOW_EXPORT = "showExport";
 }
