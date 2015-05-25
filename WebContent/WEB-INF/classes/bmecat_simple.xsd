@@ -3124,47 +3124,14 @@
 	<xsd:element name="ARTICLE_DETAILS">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="DESCRIPTION_SHORT">
-					<xsd:annotation>
-						<xsd:documentation>ePSDB: product.description_short</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element ref="DESCRIPTION_LONG" minOccurs="0">
-					<xsd:annotation>
-						<xsd:documentation>ePSDB: product.description_long</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element ref="EAN" minOccurs="0">
-					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element ref="SUPPLIER_ALT_AID" minOccurs="0">
-					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element ref="BUYER_AID" minOccurs="0" maxOccurs="unbounded">
-					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element ref="MANUFACTURER_AID" minOccurs="0">
-					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden
-</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element ref="MANUFACTURER_NAME" minOccurs="0">
-					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element ref="MANUFACTURER_TYPE_DESCR" minOccurs="0">
-					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
+				<xsd:element ref="DESCRIPTION_SHORT"/>
+				<xsd:element ref="DESCRIPTION_LONG" minOccurs="0"/>
+				<xsd:element ref="EAN" minOccurs="0"/>
+				<xsd:element ref="SUPPLIER_ALT_AID" minOccurs="0"/>
+				<xsd:element ref="BUYER_AID" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element ref="MANUFACTURER_AID" minOccurs="0"/>
+				<xsd:element ref="MANUFACTURER_NAME" minOccurs="0"/>
+				<xsd:element ref="MANUFACTURER_TYPE_DESCR" minOccurs="0"/>
 			</xsd:sequence>
 		</xsd:complexType>
 		<!-- ***** START deactivate identity-constraints ***** -->
@@ -3208,37 +3175,17 @@
 	<xsd:element name="ARTICLE_ORDER_DETAILS">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="ORDER_UNIT">
-					<xsd:annotation>
-						<xsd:documentation>ePSDB: product.order_unit</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element ref="CONTENT_UNIT" minOccurs="0">
-					<xsd:annotation>
-						<xsd:documentation>ePSDB: product.content_unit</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element ref="NO_CU_PER_OU" minOccurs="0">
-					<xsd:annotation>
-						<xsd:documentation>ePSDB: product.no_cu_per_ou</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
+				<xsd:element ref="ORDER_UNIT"/>
+				<xsd:element ref="CONTENT_UNIT" minOccurs="0"/>
+				<xsd:element ref="NO_CU_PER_OU" minOccurs="0"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="ARTICLE_PRICE">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="PRICE_AMOUNT">
-					<xsd:annotation>
-						<xsd:documentation>ePSDB: cat_price.price_amount</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element ref="PRICE_CURRENCY" minOccurs="0">
-					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
+				<xsd:element ref="PRICE_AMOUNT"/>
+				<xsd:element ref="PRICE_CURRENCY" minOccurs="0"/>
 				<xsd:element ref="TAX">
 					<xsd:annotation>
 						<xsd:documentation>CHANGED: minOccurs="1";  INHALT Dezimalzahl (0.19 entspricht 19%); ePSDB: cat_price.tax_rate</xsd:documentation>
@@ -3252,7 +3199,7 @@
 			</xsd:sequence>
 			<xsd:attribute name="price_type" use="required">
 				<xsd:annotation>
-					<xsd:documentation>CHANGED: nur Nettolistenpreise (net_list) erlaubt; kann beim Einlesen ignoriert werden</xsd:documentation>
+					<xsd:documentation>CHANGED: nur Nettolistenpreise (net_list) erlaubt;</xsd:documentation>
 				</xsd:annotation>
 				<xsd:simpleType>
 					<xsd:restriction base="dtSTRING">
@@ -3409,30 +3356,11 @@
 	<xsd:element name="CATALOG">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="LANGUAGE">
-					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden; sollte DE sein</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element ref="CATALOG_ID">
-					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element ref="CATALOG_VERSION">
-					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element ref="CATALOG_NAME" minOccurs="0">
-					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
+				<xsd:element ref="LANGUAGE"/>
+				<xsd:element ref="CATALOG_ID"/>
+				<xsd:element ref="CATALOG_VERSION"/>
+				<xsd:element ref="CATALOG_NAME" minOccurs="0"/>
 				<xsd:element name="DATETIME" minOccurs="0">
-					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden</xsd:documentation>
-					</xsd:annotation>
 					<xsd:complexType>
 						<xsd:complexContent>
 							<xsd:extension base="typeDATETIME">
@@ -4080,11 +4008,7 @@
 	<xsd:element name="HEADER">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="GENERATOR_INFO" minOccurs="0">
-					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
+				<xsd:element ref="GENERATOR_INFO" minOccurs="0"/>
 				<xsd:element ref="CATALOG"/>
 				<xsd:element ref="SUPPLIER"/>
 			</xsd:sequence>
@@ -4361,20 +4285,9 @@
 	<xsd:element name="SUPPLIER">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="SUPPLIER_ID" minOccurs="0" maxOccurs="unbounded">
-					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element ref="SUPPLIER_NAME">
-					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
+				<xsd:element ref="SUPPLIER_ID" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element ref="SUPPLIER_NAME"/>
 				<xsd:element name="ADDRESS" minOccurs="0">
-					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden</xsd:documentation>
-					</xsd:annotation>
 					<xsd:complexType>
 						<xsd:complexContent>
 							<xsd:extension base="typeADDRESS">
@@ -4554,7 +4467,7 @@
 	</xsd:element>
 	<xsd:element name="BMECAT">
 		<xsd:annotation>
-			<xsd:documentation>CHANGED: BMEcat-spezifische Namensraumdeklarationen wurden aus Schema entfernt; CHANGED: BMEcat Regeln wurden spezialisiert; TODO (nicht so wichtig): überflüssige Typen und Elemente entfernen; TODO: Definieren wie Login/Passwort-Kombination übertragen wird (WRAPPING of BMEcat oder in Attributen des BMEcat?)</xsd:documentation>
+			<xsd:documentation>CHANGED: BMEcat-spezifische Namensraumdeklarationen wurden aus Schema entfernt; CHANGED: BMEcat Regeln wurden spezialisiert; TODO (nicht so wichtig): überflüssige Typen und Elemente entfernen; </xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
@@ -4600,11 +4513,7 @@
 	<xsd:element name="ARTICLE">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="SUPPLIER_AID">
-					<xsd:annotation>
-						<xsd:documentation>ePSDB: product.order_number</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
+				<xsd:element ref="SUPPLIER_AID"/>
 				<xsd:element ref="ARTICLE_DETAILS"/>
 				<xsd:element ref="ARTICLE_ORDER_DETAILS"/>
 				<xsd:element ref="ARTICLE_PRICE_DETAILS">
@@ -4612,14 +4521,10 @@
 						<xsd:documentation>CHANGED: minOccurs="1", maxOccurs="1"</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
-				<xsd:element ref="MIME_INFO" minOccurs="0">
-					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
+				<xsd:element ref="MIME_INFO" minOccurs="0"/>
 				<xsd:element ref="ARTICLE_REFERENCE" minOccurs="0" maxOccurs="unbounded">
 					<xsd:annotation>
-						<xsd:documentation>kann beim Einlesen ignoriert werden</xsd:documentation>
+						<xsd:documentation>CHANGED</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
 			</xsd:sequence>

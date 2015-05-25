@@ -67,4 +67,5 @@ public class Constants
 	
 	public static final String ACTION_SHOW_IMPORT = "showImport";
 	public static final String ACTION_SHOW_EXPORT = "showExport";
+	public static final String ACTION_UPLOAD_IMPORT = "uploadImport";
 }

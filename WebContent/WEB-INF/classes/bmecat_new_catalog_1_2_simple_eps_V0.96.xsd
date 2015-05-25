@@ -48,7 +48,7 @@
   03.01.2003  stz: unused element CATALOG_REFERENCE deleted
 
 -->
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified">
+<xsd:schema xmlns="http://www.bmecat.org/XMLSchema/1.2/bmecat_new_catalog" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.bmecat.org/XMLSchema/1.2/bmecat_new_catalog" elementFormDefault="qualified">
 	<xsd:annotation>
 		<xsd:documentation>ISO 3166-1:1997; ISO 3166-2:1998</xsd:documentation>
 	</xsd:annotation>
