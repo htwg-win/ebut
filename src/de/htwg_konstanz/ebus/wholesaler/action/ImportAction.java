@@ -82,10 +82,9 @@ public class ImportAction implements IAction {
 							im.importXMLFromStream(is);							
 							im.isValidDOM();
 							
-							im.persist();
+							int persisted = im.persist();
 							
-							errorList.add("Catalog import successful.");
-							
+							errorList.add("Catalog import successful. "+persisted + " items imported");
 							
 						} catch (XMLImportException e) {
 							errorList.add("The File you tried uploading is not a wellformed XML file. <br/>"+ e.getMessage());

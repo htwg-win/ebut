@@ -1,16 +1,13 @@
 package de.htwg_konstanz.ebus.wholesaler.main;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
-import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Validator;
 import javax.xml.parsers.DocumentBuilder;
@@ -19,17 +16,17 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.hibernate.PersistentObjectException;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
+import de.htwg_konstanz.ebus.framework.wholesaler.api.bo.BOCountry;
 import de.htwg_konstanz.ebus.framework.wholesaler.api.bo.BOProduct;
+import de.htwg_konstanz.ebus.framework.wholesaler.api.bo.BOPurchasePrice;
+import de.htwg_konstanz.ebus.framework.wholesaler.api.bo.BOSalesPrice;
 import de.htwg_konstanz.ebus.framework.wholesaler.api.bo.BOSupplier;
+import de.htwg_konstanz.ebus.framework.wholesaler.api.boa.CountryBOA;
+import de.htwg_konstanz.ebus.framework.wholesaler.api.boa.PriceBOA;
 import de.htwg_konstanz.ebus.framework.wholesaler.api.boa.ProductBOA;
 import de.htwg_konstanz.ebus.framework.wholesaler.api.boa.SupplierBOA;
 import de.htwg_konstanz.ebus.wholesaler.Exceptions.InvalidXMLException;
@@ -78,7 +75,7 @@ public class ImportBean {
 	}
 	
 	
-	public void persist() throws PersistentObjectException {
+	public int persist() throws PersistentObjectException {
 		
 		Element root = this.doc.getDocumentElement();
 		NodeList supplier_name = root.getElementsByTagName("SUPPLIER_NAME");
@@ -97,29 +94,114 @@ public class ImportBean {
 		Element el;
 		BOProduct product;
 		ProductBOA pboa = ProductBOA.getInstance();
-		
+				
+		int _new = 0;
 		
 		for (int i=0; i<products.getLength(); i++) {
 			el = (Element)products.item(i);
-
-			product = new BOProduct();
+			
+			String supplierNumber = el.getElementsByTagName("SUPPLIER_AID").item(0).getTextContent();
+			BOProduct prod = pboa.findByOrderNumberSupplier(supplierNumber);
+			
+			if(prod != null) { 
+				product = prod;
+			} else {
+				product = new BOProduct();	
+			}
+			
+			++_new;
+			
+			String description_short = el.getElementsByTagName("DESCRIPTION_SHORT").item(0).getTextContent();
+			String description_long = el.getElementsByTagName("DESCRIPTION_LONG").item(0).getTextContent();
+			
 			product.setSupplier(sup.get(0));
-			product.setLongDescription(el.getElementsByTagName("DESCRIPTION_LONG").item(0).getTextContent());
-			product.setShortDescription(el.getElementsByTagName("DESCRIPTION_SHORT").item(0).getTextContent());
+			product.setLongDescription(description_long);
+			product.setLongDescriptionCustomer(description_long);
+			product.setShortDescription(description_short);
+			product.setShortDescriptionCustomer(description_short);
+			product.setManufacturer(str);
+			
 			product.setOrderNumberSupplier(el.getElementsByTagName("SUPPLIER_AID").item(0).getTextContent());
 			product.setOrderNumberCustomer(el.getElementsByTagName("SUPPLIER_AID").item(0).getTextContent());
+			
 			pboa.saveOrUpdate(product);
 			
+			this.persistPrices(product, el.getElementsByTagName("ARTICLE_PRICE"));
 			
 			
 			System.out.println("Artikel : " + el.getElementsByTagName("SUPPLIER_AID").item(0).getTextContent());
 		}
 		
+		return  _new;
+	}
+	
+
+	
+	private void persistPrices(BOProduct product, NodeList prices) {
+		CountryBOA cboa = CountryBOA.getInstance();
+		BOCountry country;
 		
+		PriceBOA pboa = PriceBOA.getInstance();
+		
+		BOPurchasePrice pp;
+		BOSalesPrice sp;
+		
+		Element el;
+		String priceType;
+		NodeList terris;
+		
+		//delete all old prices
+		//this.deleteAllPrices(pboa, product);
+						
+		for (int i=0; i<prices.getLength(); i++) {
+			el = (Element)prices.item(i);
+			priceType = el.getAttribute("price_type");
+			
+			terris = el.getElementsByTagName("TERRITORY");
+			for (int k=0; k<terris.getLength(); k++) {
+				 country = cboa.findCountry(terris.item(k).getTextContent());
+				 pp = new BOPurchasePrice();
+				 pp.setCountry(country);
+				 pp.setLowerboundScaledprice(1);
+				 pp.setAmount(new BigDecimal(el.getElementsByTagName("PRICE_AMOUNT").item(0).getTextContent()));
+				 pp.setProduct(product);
+				 pp.setTaxrate(new BigDecimal(el.getElementsByTagName("TAX").item(0).getTextContent()));
+				 pp.setPricetype(priceType);
+				 pboa.saveOrUpdatePurchasePrice(pp);
+				 
+				 sp = new BOSalesPrice();
+				 sp.setCountry(country);
+				 sp.setLowerboundScaledprice(1);
+				 BigDecimal pr = new BigDecimal(Double.parseDouble(el.getElementsByTagName("PRICE_AMOUNT").item(0).getTextContent()) * 1.5);
+				 sp.setAmount(pr);
+				 sp.setProduct(product);
+				 sp.setTaxrate(new BigDecimal(el.getElementsByTagName("TAX").item(0).getTextContent()));
+				 sp.setPricetype(priceType);
+				 pboa.saveOrUpdateSalesPrice(sp);  
+			}
+			
+		}
 		
 	}
 	
-	
+	private void deleteAllPrices(PriceBOA pboa, BOProduct product) {
+		//delete all prices
+		List<BOPurchasePrice> purchase_prices = pboa.findPurchasePrices(product);
+		List<BOSalesPrice> sales_prices = pboa.findSalesPrices(product);
+		
+		int s = purchase_prices.size();
+		for( int k = 0;k < s;k++ ) {
+			pboa.deletePurchasePrice(purchase_prices.get(k));
+		}
+		
+		s = sales_prices.size();
+		for( int k = 0;k < s;k++ ) {
+			pboa.deleteSalesPrice(sales_prices.get(k));
+		}
+		
+		
+	}
+		
 	public boolean importDom(org.w3c.dom.Document document) {
 		
 		return false;

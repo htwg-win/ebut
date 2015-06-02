@@ -18,7 +18,7 @@
 <h1>Import</h1>
 <div>
 	<form action="<%= response.encodeURL("controllerservlet?action="+Constants.ACTION_UPLOAD_IMPORT) %>" enctype="multipart/form-data" method="post">  
-	  <input type="file" name="file"> 
+	  <input type="file" name="file" accept=".xml"> 
 	  <button type="submit">Import Now!</button> 
 	</form>
 </div>
