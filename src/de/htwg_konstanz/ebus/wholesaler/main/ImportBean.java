@@ -36,6 +36,7 @@ public class ImportBean {
 
 	private Document doc;
 	
+	// parse InputStream to DOM and if its a well-formed XML
 	public void importXMLFromStream(InputStream input) throws XMLImportException {
 			
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -55,6 +56,7 @@ public class ImportBean {
 	}
 	
 	
+	// check if DOM is valid BMEcat
 	public void isValidDOM() throws InvalidXMLException{
 		
 		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -73,7 +75,6 @@ public class ImportBean {
 		} 
 
 	}
-	
 	
 	public int persist() throws PersistentObjectException {
 		
