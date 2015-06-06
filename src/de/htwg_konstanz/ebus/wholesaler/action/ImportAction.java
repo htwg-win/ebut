@@ -1,7 +1,5 @@
 package de.htwg_konstanz.ebus.wholesaler.action;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -10,7 +8,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
@@ -18,7 +15,6 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.hibernate.PersistentObjectException;
-import org.xml.sax.SAXException;
 
 import de.htwg_konstanz.ebus.wholesaler.Exceptions.InvalidXMLException;
 import de.htwg_konstanz.ebus.wholesaler.Exceptions.XMLImportException;
@@ -29,8 +25,7 @@ import de.htwg_konstanz.ebus.wholesaler.main.ImportBean;
 
 /**
  * The ImportAction processes an import request.
- * <p>
- *
+ * 
  * @author jd
  */
 public class ImportAction implements IAction {
@@ -51,23 +46,24 @@ public class ImportAction implements IAction {
 	 *            corresponding action
 	 * @return the redirection URL
 	 */
-	public String execute(HttpServletRequest request,
-			HttpServletResponse response, ArrayList<String> errorList) {
+
+	public String execute(HttpServletRequest request, HttpServletResponse response, ArrayList<String> errorList) {
 
 		// get the action request parameter
-		String actionName = (String) request
-				.getParameter(Constants.PARAM_NAME_ACTION);
+		String actionName = (String) request.getParameter(Constants.PARAM_NAME_ACTION);
 
+		
+		// ACTION_UPLOAD_IMPORT
 		if (actionName.equalsIgnoreCase(Constants.ACTION_UPLOAD_IMPORT)) {
 
 			ImportBean im = new ImportBean();
+			
 			try {
-
 				// start file-upload process
-				boolean isMultipart = ServletFileUpload
-						.isMultipartContent(request);
+				boolean isMultipart = ServletFileUpload.isMultipartContent(request);
 
-				if (isMultipart) {
+				if (isMultipart) {		
+					// FileUploader
 					FileItemFactory factory = new DiskFileItemFactory();
 					ServletFileUpload upload = new ServletFileUpload(factory);
 
@@ -79,40 +75,39 @@ public class ImportAction implements IAction {
 						InputStream is = item.getInputStream();
 
 						try {
-							im.importXMLFromStream(is);							
+							// parse imported XML
+							im.importXMLFromStream(is);
+							
+							// validate imported XML
 							im.isValidDOM();
-							
+
+							// persist imported XML
 							int persisted = im.persist();
-							
-							errorList.add("Catalog import successful. "+persisted + " items imported");
-							
+
+							// success message
+							errorList.add("Catalog import successful. " + persisted + " items imported");
+
 						} catch (XMLImportException e) {
-							errorList.add("The File you tried uploading is not a wellformed XML file. <br/>"+ e.getMessage());
+							errorList.add("The File you tried uploading is not a wellformed XML file.");
 						} catch (InvalidXMLException e) {
 							errorList.add("Invalid XML format. <br/>" + e.getMessage());
 						} catch (PersistentObjectException e) {
-							errorList.add("persistError :<br/> "+ e.getMessage());
+							errorList.add("persistError :<br/> " + e.getMessage());
 						}
 					}
 
-				} else {
-
 				}
-
 			} catch (FileUploadException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				
+				e.printStackTrace();
 			}
 
-		} else {
-
 		}
-
+		
+		
 		// @TODO: check role and logged in status
 		return "import.jsp";
-		
 
 	}
 
@@ -127,7 +122,6 @@ public class ImportAction implements IAction {
 	 * @return true if the action is responsible, else false
 	 */
 	public boolean accepts(String actionName) {
-		return actionName.equalsIgnoreCase(Constants.ACTION_SHOW_IMPORT)
-				|| actionName.equalsIgnoreCase(Constants.ACTION_UPLOAD_IMPORT);
+		return actionName.equalsIgnoreCase(Constants.ACTION_SHOW_IMPORT) || actionName.equalsIgnoreCase(Constants.ACTION_UPLOAD_IMPORT);
 	}
 }

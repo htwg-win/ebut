@@ -36,7 +36,7 @@ public class ImportBean {
 
 	private Document doc;
 	
-	// parse InputStream to DOM and if its a well-formed XML
+	// parse InputStream to DOM and check if it is a well-formed XML
 	public void importXMLFromStream(InputStream input) throws XMLImportException {
 			
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -56,7 +56,7 @@ public class ImportBean {
 	}
 	
 	
-	// check if DOM is valid BMEcat
+	// validate DOM (BMEcat)
 	public void isValidDOM() throws InvalidXMLException{
 		
 		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -76,20 +76,21 @@ public class ImportBean {
 
 	}
 	
+	// persist product details
 	public int persist() throws PersistentObjectException {
 		
 		Element root = this.doc.getDocumentElement();
+			
+		// get SUPPLIER NAME and check if supplier exists in DB
 		NodeList supplier_name = root.getElementsByTagName("SUPPLIER_NAME");
+		String supplier_name_str = supplier_name.item(0).getTextContent();
 		
-		String str = supplier_name.item(0).getTextContent();
-		
-		List<BOSupplier> sup = SupplierBOA.getInstance().findByCompanyName(str);
-						
-		if(sup.isEmpty()) {
-			throw new PersistentObjectException("Supplier "+str+" does not exist");
+		List<BOSupplier> cat_supplier = SupplierBOA.getInstance().findByCompanyName(supplier_name_str);		
+		if(cat_supplier.isEmpty()) {
+			throw new PersistentObjectException("Supplier "+supplier_name_str+" does not exist");
 		}
 		
-		
+		// get all ARTICELS
 		NodeList products = root.getElementsByTagName("ARTICLE");
 		
 		Element el;
@@ -98,47 +99,60 @@ public class ImportBean {
 				
 		int _new = 0;
 		
+		// iterate over ARTICLES
 		for (int i=0; i<products.getLength(); i++) {
+			
 			el = (Element)products.item(i);
 			
+			// check if product already exists (SUPPLIER_AID + SUPPLIER_NAME)
 			String supplierNumber = el.getElementsByTagName("SUPPLIER_AID").item(0).getTextContent();
 			BOProduct prod = pboa.findByOrderNumberSupplier(supplierNumber);
 			
-			if(prod != null) { 
+			if(prod != null && cat_supplier.get(0).getSupplierNumber().equals(prod.getSupplier().getSupplierNumber())) { 
+				// if product exists (same OrderNumberSupplier and supplier_id) -> update product
 				product = prod;
 			} else {
+				// else -> create new product
 				product = new BOProduct();	
 			}
 			
-			++_new;
-			
+			// get short and long description
 			String description_short = el.getElementsByTagName("DESCRIPTION_SHORT").item(0).getTextContent();
 			String description_long = el.getElementsByTagName("DESCRIPTION_LONG").item(0).getTextContent();
 			
-			product.setSupplier(sup.get(0));
+			// set supplier, descriptions and manufacturer
+			product.setSupplier(cat_supplier.get(0));
 			product.setLongDescription(description_long);
 			product.setLongDescriptionCustomer(description_long);
 			product.setShortDescription(description_short);
 			product.setShortDescriptionCustomer(description_short);
-			product.setManufacturer(str);
+			product.setManufacturer(supplier_name_str);
 			
+			// set OrderNumberSupplier
 			product.setOrderNumberSupplier(el.getElementsByTagName("SUPPLIER_AID").item(0).getTextContent());
-			product.setOrderNumberCustomer(el.getElementsByTagName("SUPPLIER_AID").item(0).getTextContent());
 			
+			// generate and set OrderNumberCustomer (combination of supplier_id and OrderNumberSupplier)
+			String orderNumberCustomer = cat_supplier.get(0).getSupplierNumber() + "_" + el.getElementsByTagName("SUPPLIER_AID").item(0).getTextContent();
+			product.setOrderNumberCustomer(orderNumberCustomer);
+			
+			// saveOrUpdate
 			pboa.saveOrUpdate(product);
 			
+			// call method persistPrices
 			this.persistPrices(product, el.getElementsByTagName("ARTICLE_PRICE"));
 			
+			++_new;
 			
-			System.out.println("Artikel : " + el.getElementsByTagName("SUPPLIER_AID").item(0).getTextContent());
 		}
 		
+		// return number of updated 
 		return  _new;
 	}
 	
 
-	
+	// persist product prices
 	private void persistPrices(BOProduct product, NodeList prices) {
+		
 		CountryBOA cboa = CountryBOA.getInstance();
 		BOCountry country;
 		
@@ -153,14 +167,22 @@ public class ImportBean {
 		
 		//delete all old prices
 		//this.deleteAllPrices(pboa, product);
-						
+		
+		// iterate over prices
 		for (int i=0; i<prices.getLength(); i++) {
+			
 			el = (Element)prices.item(i);
+			
+			// set price_type
 			priceType = el.getAttribute("price_type");
 			
+			// iterate over TERRITORIES
 			terris = el.getElementsByTagName("TERRITORY");
-			for (int k=0; k<terris.getLength(); k++) {
+			
+			for (int k=0; k< terris.getLength(); k++) {
 				 country = cboa.findCountry(terris.item(k).getTextContent());
+				 
+				 // set purchase prices
 				 pp = new BOPurchasePrice();
 				 pp.setCountry(country);
 				 pp.setLowerboundScaledprice(1);
@@ -170,6 +192,7 @@ public class ImportBean {
 				 pp.setPricetype(priceType);
 				 pboa.saveOrUpdatePurchasePrice(pp);
 				 
+				 // set sales prices
 				 sp = new BOSalesPrice();
 				 sp.setCountry(country);
 				 sp.setLowerboundScaledprice(1);
@@ -185,26 +208,24 @@ public class ImportBean {
 		
 	}
 	
+	// delete all prices in DB
 	private void deleteAllPrices(PriceBOA pboa, BOProduct product) {
 		//delete all prices
 		List<BOPurchasePrice> purchase_prices = pboa.findPurchasePrices(product);
 		List<BOSalesPrice> sales_prices = pboa.findSalesPrices(product);
 		
+		// delete all purchase prices
 		int s = purchase_prices.size();
 		for( int k = 0;k < s;k++ ) {
 			pboa.deletePurchasePrice(purchase_prices.get(k));
 		}
 		
+		// delete all sales prices
 		s = sales_prices.size();
 		for( int k = 0;k < s;k++ ) {
 			pboa.deleteSalesPrice(sales_prices.get(k));
 		}
-		
-		
+				
 	}
-		
-	public boolean importDom(org.w3c.dom.Document document) {
-		
-		return false;
-	}
+
 }
