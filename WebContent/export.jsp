@@ -28,6 +28,8 @@
 </div>
 </div>
 <div>
+<% if(!session.getAttribute("listSize").equals(0)) { %>
+
 <table class="dataTable">
 <thead>
 <tr>
@@ -62,6 +64,9 @@
 </c:forEach>
 </tbody>
 </table>
+<% } else { %>
+<h3>No matches found in product database.</h3>
+<% } %>
 </div>
 </body>
 </html>

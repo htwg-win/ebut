@@ -66,6 +66,10 @@ public class ExportAction implements IAction {
 			productList = ProductBOA.getInstance().findAll();
 			request.getSession(true).setAttribute(PARAM_PRODUCT_LIST, productList);
 		}
+		
+		//list size
+		request.getSession(true).setAttribute("listSize", productList.size());
+
 
 		// EXPORT BMECAT
 		if (mode != null && mode.equals("bmecat")) {

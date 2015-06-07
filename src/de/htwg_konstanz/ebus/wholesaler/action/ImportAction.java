@@ -92,7 +92,7 @@ public class ImportAction implements IAction {
 						} catch (InvalidXMLException e) {
 							errorList.add("Invalid XML format. <br/>" + e.getMessage());
 						} catch (PersistentObjectException e) {
-							errorList.add("persistError :<br/> " + e.getMessage());
+							errorList.add( e.getMessage());
 						}
 					}
 
